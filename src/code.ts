@@ -1,4 +1,4 @@
-import { Observable } from "rxjs";
+import { Observable, fromEvent } from "rxjs";
 
 var observable = Observable.create(function subscribe(observer:any) {
     
@@ -6,10 +6,12 @@ var observable = Observable.create(function subscribe(observer:any) {
 
         observer.next('Hey guys!');
         observer.next('How are you?');
+        
+        setInterval(() => {
 
-        observer.complete();
-
-        observer.next('This will not send');
+            observer.next('I am good')
+            
+        }, 2000);
 
     } catch(err) {
 
@@ -19,10 +21,21 @@ var observable = Observable.create(function subscribe(observer:any) {
 
 });
 
-observable.subscribe(
+var observer = observable.subscribe(
     (x:any) => addItem(x),
     (error:any) => addItem(error),
     () => addItem('Completed'));
+
+var observer2 = observable.subscribe(
+        (x:any) => addItem(x));    
+
+observer.add(observer2);
+
+setTimeout(() => {
+
+    observer.unsubscribe();
+
+}, 6001);
 
 function addItem(val:any){
     var node = document.createElement("li");
